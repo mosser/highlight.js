@@ -1,0 +1,39 @@
+
+justification appropriate {
+
+	evidence ev1 is "data are ready for model training" 
+
+	conclusion sc2 is "model type is appropriate for problem and context" 
+	strategy strat2 is "use ridge regression with time series training"
+	evidence ev2 is "linear model fits numeric game data + trained sequentially over years" 
+
+	ev1 supports strat2
+	strat2 supports sc2
+	ev2 supports strat2
+
+}
+
+justification performant {
+
+	conclusion sc3 is "selected features improve model performance" 
+	strategy strat3 is "sequential feature selector applied to reduce 150 to 30" 
+	evidence ev3 is "features chosen maximize accuracy incrementally (model improved accuracy from 55% to 63%)" 
+	evidence ev1 is "data are ready for model training"
+
+
+	ev1 supports strat3
+	strat3 supports sc3
+	ev3 supports strat3
+}
+
+justification sufficient {
+
+	conclusion sc4 is "dataset size and scope are sufficient" 
+	strategy strat4 is "check average career and relevent player statistics" 
+	evidence ev4 is "dataset includes 7 seasons (8.2-year avg career); 150 initial features (e.g. fg%, pts)" 
+	evidence ev1 is "data are ready for model training" 
+
+	ev1 supports strat4
+	strat4 supports sc4
+	ev4 supports strat4
+}
