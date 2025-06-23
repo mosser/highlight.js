@@ -32,7 +32,14 @@ export default function(hljs) {
         className: 'keyword'
       },
 
-      // 2) relations: "X supports Y", "X is Y", "X refines Y"
+      // 2) explicit "x supports y" pattern
+      {
+        begin: IDENT + '\\s+supports\\s+' + IDENT,
+        end: /$/,
+        keywords: { built_in: 'supports' }
+      },
+
+      // 3) relations: "X supports Y", "X is Y", "X refines Y"
       {
         match: new RegExp(`(${IDENT})\\s+(supports|is|refines)\\s+(${IDENT})`),
         scope: {
@@ -42,7 +49,7 @@ export default function(hljs) {
         }
       },
 
-      // 3) justification blocks with title
+      // 4) justification blocks with title
       {
         className: 'title',
         begin: /\bjustification\b/,
@@ -56,7 +63,7 @@ export default function(hljs) {
         ]
       },
 
-      // 4) pattern blocks
+      // 5) pattern blocks
       {
         className: 'title',
         begin: /\bpattern\b/,
@@ -70,7 +77,7 @@ export default function(hljs) {
         ]
       },
 
-      // 5) composition blocks
+      // 6) composition blocks
       {
         className: 'title',
         begin: /\bcomposition\b/,
@@ -84,7 +91,7 @@ export default function(hljs) {
         ]
       },
 
-      // 6) load statements
+      // 7) load statements
       {
         className: 'title',
         begin: /\bload\b/,
@@ -98,13 +105,13 @@ export default function(hljs) {
         ]
       },
 
-      // 7) standalone built-in keywords (must come after relation matching)
+      // 8) standalone built-in keywords (must come after relation matching)
       {
         match: /\b(supports|is|refines|assemble)\b/,
         className: 'built_in'
       },
 
-      // 8) numbers & punctuation
+      // 9) numbers & punctuation
       { className: 'number',   begin: '\\b\\d+(?:\\.\\d+)?\\b' },
       { className: 'punctuation', begin: /[{}():,]/ }
     ]
