@@ -11,7 +11,7 @@ export default function(hljs) {
   const IDENT = '[A-Za-z_][A-Za-z0-9_]*';
 
   const KEYWORDS = {
-    keyword: 'evidence sub conclusion strategy relation hook',
+    keyword: 'evidence sub conclusion strategy relation hook refine',
     built_in: 'assemble',
     title: 'justification pattern load composition'
   };
@@ -49,53 +49,71 @@ export default function(hljs) {
         }
       },
 
-      // 4) justification blocks with title
+      // 4) standalone built-in keywords (must come before title blocks)
+      {
+        match: /\b(supports|is|refines|assemble)\b/,
+        className: 'built_in'
+      },
+
+      // 5) function calls like refine(peer_buddy, recruitment)
+      {
+        match: /\b(refine)\s*\(/,
+        scope: {
+          1: 'keyword'
+        }
+      },
+
+      // 6) justification blocks with title
       {
         className: 'title',
         begin: /\bjustification\b/,
-        end: /$/,
+        end: /[{(]/,
+        returnEnd: true,
         contains: [
           {
-            className: 'title.function',
+            className: 'variable',
             begin: new RegExp('(?<=\\bjustification\\s+)' + IDENT),
             relevance: 0
           }
         ]
       },
 
-      // 5) pattern blocks
+      // 7) pattern blocks
       {
         className: 'title',
         begin: /\bpattern\b/,
-        end: /$/,
+        end: /[{(]/,
+        returnEnd: true,
         contains: [
           {
-            className: 'title.function',
+            className: 'variable',
             begin: new RegExp('(?<=\\bpattern\\s+)' + IDENT),
             relevance: 0
           }
         ]
       },
 
-      // 6) composition blocks
+      // 8) composition blocks
       {
         className: 'title',
         begin: /\bcomposition\b/,
-        end: /$/,
+        end: /[{(]/,
+        returnEnd: true,
         contains: [
           {
-            className: 'title.function',
+            className: 'variable',
             begin: new RegExp('(?<=\\bcomposition\\s+)' + IDENT),
             relevance: 0
           }
         ]
       },
 
-      // 7) load statements
+      // 9) load statements
       {
         className: 'title',
         begin: /\bload\b/,
-        end: /$/,
+        end: /[{(]/,
+        returnEnd: true,
         contains: [
           {
             className: 'string',
@@ -105,13 +123,20 @@ export default function(hljs) {
         ]
       },
 
-      // 8) standalone built-in keywords (must come after relation matching)
+      // 10) function parameters (variables inside parentheses)
       {
-        match: /\b(supports|is|refines|assemble)\b/,
-        className: 'built_in'
+        begin: /\(/,
+        end: /\)/,
+        contains: [
+          {
+            match: /\b[A-Za-z_][A-Za-z0-9_]*\b/,
+            className: 'variable'
+          },
+          { className: 'punctuation', begin: /[,]/ }
+        ]
       },
 
-      // 9) numbers & punctuation
+      // 11) numbers & punctuation
       { className: 'number',   begin: '\\b\\d+(?:\\.\\d+)?\\b' },
       { className: 'punctuation', begin: /[{}():,]/ }
     ]
