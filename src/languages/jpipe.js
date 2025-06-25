@@ -12,11 +12,13 @@ export default function(hljs) {
 
   const KEYWORDS = {
     keyword: 'evidence sub conclusion strategy relation hook refine',
-    built_in: 'assemble',
+    built_in: 'assemble is',
     title: 'justification pattern load composition'
   };
 
   return {
+    disableAutodetect: true,
+
     name: 'JPipe',
     aliases: ['jpipe'],
     keywords: KEYWORDS,
@@ -32,53 +34,41 @@ export default function(hljs) {
         className: 'keyword'
       },
 
-      // 2) explicit "x supports y" pattern
+      // 2) refine function calls with parameters
+      {
+        match: /\brefine(?=\s*\()/,
+        className: 'keyword'
+      },
+
+      // 3) explicit "x supports y" pattern
       {
         begin: IDENT + '\\s+supports\\s+' + IDENT,
         end: /$/,
         keywords: { built_in: 'supports' }
       },
 
-      // 3) relations: "X supports Y", "X is Y", "X refines Y"
+      // 4) relations: "X supports Y", "X is Y"
       {
-        match: new RegExp(`(${IDENT})\\s+(supports|is|refines)\\s+(${IDENT})`),
+        match: new RegExp(`(${IDENT})\\s+(supports|is)\\s+(${IDENT})`),
         scope: {
           1: 'variable',   // X
-          2: 'built_in',   // supports/is/refines
+          2: 'built_in',   // supports/is
           3: 'variable'    // Y
         }
       },
 
-      // 4) standalone built-in keywords (must come before title blocks)
+      // 5) justification blocks with title
       {
-        match: /\b(supports|is|refines|assemble)\b/,
-        className: 'built_in'
-      },
-
-      // 5) function calls like refine(peer_buddy, recruitment)
-      {
-        match: /\b(refine)\s*\(/,
-        scope: {
-          1: 'keyword'
-        }
-      },
-
-      // 6) justification blocks with title
-      {
-        className: 'title',
-        begin: /\bjustification\b/,
-        end: /[{(]/,
-        returnEnd: true,
+        begin: /\bjustification\s+([A-Za-z_][A-Za-z0-9_]*)/,
+        returnBegin: true,
+        end: /(?=\s(is|\{|\())|$/,
         contains: [
-          {
-            className: 'variable',
-            begin: new RegExp('(?<=\\bjustification\\s+)' + IDENT),
-            relevance: 0
-          }
+          { className: 'title', begin: /\bjustification\b/ },
+          { className: 'variable', begin: new RegExp('(?<=\\bjustification\\s+)' + IDENT) }
         ]
       },
 
-      // 7) pattern blocks
+      // 6) pattern blocks
       {
         className: 'title',
         begin: /\bpattern\b/,
@@ -93,7 +83,7 @@ export default function(hljs) {
         ]
       },
 
-      // 8) composition blocks
+      // 7) composition blocks
       {
         className: 'title',
         begin: /\bcomposition\b/,
@@ -108,7 +98,7 @@ export default function(hljs) {
         ]
       },
 
-      // 9) load statements
+      // 8) load statements
       {
         className: 'title',
         begin: /\bload\b/,
@@ -123,7 +113,19 @@ export default function(hljs) {
         ]
       },
 
-      // 10) function parameters (variables inside parentheses)
+      // 9) standalone keywords (must come after specific patterns)
+      {
+        match: /\b(refine|evidence|conclusion|sub-conclusion|strategy|hook|relation)\b/,
+        className: 'keyword'
+      },
+
+      // 10) standalone built-in keywords
+      {
+        match: /\b(supports|is|assemble)\b/,
+        className: 'built_in'
+      },
+
+      // 11) function parameters (variables inside parentheses)
       {
         begin: /\(/,
         end: /\)/,
